@@ -24,7 +24,7 @@ def convert_kanjium_to_javdejong(kanjium_string):
         all_kana_def = {}
         
         # Find all kana characters
-        all_kana_matches = re.findall(r'[ぁ-んァ-ン]', pitch_accent_description)
+        all_kana_matches = re.findall(r'[ぁ-んァ-ンゞ゛゜ー]', pitch_accent_description)
         if all_kana_matches:
             for kana_match in all_kana_matches:
                 all_kana.append(kana_match)
@@ -34,7 +34,7 @@ def convert_kanjium_to_javdejong(kanjium_string):
             print(all_kana)
 
         # Find characters that have an overline
-        overline_kana_matches = re.findall(r'<span style="display:inline-block;position:relative;"><span style="display:inline;">([ぁ-んァ-ン]*?)<\/span><span style="border-color:currentColor;display:block;user-select:none;pointer-events:none;position:absolute;top:0.1em;left:0;right:0;height:0;border-top-width:0.1em;border-top-style:solid;"><\/span><\/span>', pitch_accent_description)
+        overline_kana_matches = re.findall(r'<span style="display:inline-block;position:relative;"><span style="display:inline;">([ぁ-んァ-ンゞ゛゜ー]*?)<\/span><span style="border-color:currentColor;display:block;user-select:none;pointer-events:none;position:absolute;top:0.1em;left:0;right:0;height:0;border-top-width:0.1em;border-top-style:solid;"><\/span><\/span>', pitch_accent_description)
         if overline_kana_matches:
             for overline_kana in overline_kana_matches:
                 if debug:
@@ -42,23 +42,23 @@ def convert_kanjium_to_javdejong(kanjium_string):
                 all_kana_def[overline_kana]['overline'] = True
 
         # Find characters that have an overline and downpitch notch
-        downpitch_matches = re.findall(r'<span style="display:inline-block;position:relative;padding-right:0.1em;margin-right:0.1em;"><span style="display:inline;">([ぁ-んァ-ン]*?)<\/span><span style="border-color:currentColor;display:block;user-select:none;pointer-events:none;position:absolute;top:0.1em;left:0;right:0;height:0;border-top-width:0.1em;border-top-style:solid;right:-0.1em;height:0.4em;border-right-width:0.1em;border-right-style:solid;"><\/span><\/span>', pitch_accent_description)
+        downpitch_matches = re.findall(r'<span style="display:inline-block;position:relative;padding-right:0.1em;margin-right:0.1em;"><span style="display:inline;">([ぁ-んァ-ンゞ゛゜ー]*?)<\/span><span style="border-color:currentColor;display:block;user-select:none;pointer-events:none;position:absolute;top:0.1em;left:0;right:0;height:0;border-top-width:0.1em;border-top-style:solid;right:-0.1em;height:0.4em;border-right-width:0.1em;border-right-style:solid;"><\/span><\/span>', pitch_accent_description)
         if downpitch_matches:
             for downpitch_kana in downpitch_matches:
                 if debug:
                     print('downpitch_kana', downpitch_kana)
-                all_kana_def[overline_kana]['overline'] = True
-                all_kana_def[overline_kana]['down'] = True
+                all_kana_def[downpitch_kana]['overline'] = True
+                all_kana_def[downpitch_kana]['down'] = True
 
         result = ''
         started_overline = False
         ended_overline = False
-        for overline_kana in all_kana:
-            overline, down = all_kana_def[overline_kana]['overline'], all_kana_def[overline_kana]['down']
+        for kana in all_kana:
+            overline, down = all_kana_def[kana]['overline'], all_kana_def[kana]['down']
             if overline and not started_overline:
                 result += '<span style="text-decoration:overline;">'
                 started_overline = True
-            result += overline_kana
+            result += kana
             if down:
                 result += '</span>&#42780;'
                 ended_overline = True
